@@ -11,12 +11,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@TeleOp(name = "DriveTrainv11")
-public class DriveTrainv11 extends LinearOpMode {
+@TeleOp(name = "KiwiDrive")
+public class KiwiDrive extends LinearOpMode {
     private DcMotor[] motors = new DcMotor[3];
     private double motorPower = 0.5;
     private double motorPowerTurn = 1;
-    private double acceleration = 0.3; // Test to define the final number
+    private double acceleration = 0.1; // Test to define the final number
     private BNO055IMU imu;
 
     @Override
