@@ -16,7 +16,6 @@ public class KiwiDrivev4 extends LinearOpMode {
     private DcMotor[] motors = new DcMotor[3];
     private double motorPower = 0.5;
     private double motorPowerTurn = 1;
-    private double acceleration = 0.1;
     private BNO055IMU imu;
 
     @Override
@@ -69,26 +68,42 @@ public class KiwiDrivev4 extends LinearOpMode {
             double leftX = gamepad1.left_stick_x;
             double leftY = -gamepad1.left_stick_y;
             double rightX = gamepad1.right_stick_x;
+
+            //Anti Turbo
             if (gamepad1.left_trigger > 0) {
                 motorPower = 0.3;
                 motorPowerTurn = 0.3;
+            //Turbo
             } else if (gamepad1.right_trigger > 0) {
                 motorPower = 1;
+            //Normal velocity
             } else {
                 motorPower = 0.5;
             }
 
+                // Rotate the robot
+               double turnPower = -rightX;
+               motors[0].setPower(motors[0].getPower() + turnPower);
+               motors[1].setPower(motors[1].getPower() + turnPower);
+               motors[2].setPower(motors[2].getPower() + turnPower);
+}
+
+        //Foward
             if (leftY > 0 && leftX == 0) {
                 motors[0].setPower(0);
                 motors[1].setPower(motorPower);
                 motors[2].setPower(motorPower);
 
             }
+
+        //Backwards
             if (leftY < 0 && leftX == 0) {
                 motors[0].setPower(0);
                 motors[1].setPower(-motorPower);
                 motors[2].setPower(-motorPower);
                 Control(leftX, leftY, rightX);
+
+        
             } else if (leftY != 0 || leftX != 0 || rightX != 0) {
                 Control(leftX, leftY, rightX);
 
@@ -112,20 +127,24 @@ public class KiwiDrivev4 extends LinearOpMode {
         }
     }
 
-    public void Control(double leftX, double leftY, double rightX) {
-        double powerFront = -leftY;
-        double powerBackLeft = (Math.sqrt(3) / 2) * leftX + (1.0 / 2) * leftY;
-        double powerBackRight = -(Math.sqrt(3) / 2) * leftX - (1.0 / 2) * leftY;
+public void Control(double leftX, double leftY, double rightX) {
+    double targetPowerFront = -leftY;
+    double targetPowerBackLeft = (Math.sqrt(3) / 2) * leftX + (1.0 / 2) * leftY;
+    double targetPowerBackRight = -(Math.sqrt(3) / 2) * leftX - (1.0 / 2) * leftY;
 
-        // Asignar potencia a los motores
-        motors[0].setPower(powerFront);
-        motors[1].setPower(powerBackLeft);
-        motors[2].setPower(powerBackRight);
+    double currentPowerFront = motors[0].getPower();
+    double currentPowerBackLeft = motors[1].getPower();
+    double currentPowerBackRight = motors[2].getPower();
 
-        // Girar el robot
-        double turnPower = -rightX;
-        motors[0].setPower(motors[0].getPower() + turnPower);
-        motors[1].setPower(motors[1].getPower() + turnPower);
-        motors[2].setPower(motors[2].getPower() + turnPower);
-    }
+    double powerChangeRate = 0.1; // Adjust this value to control the acceleration/deceleration rate
+
+    // Gradually adjust the power of each motor towards the target power
+    currentPowerFront += (targetPowerFront - currentPowerFront) * powerChangeRate;
+    currentPowerBackLeft += (targetPowerBackLeft - currentPowerBackLeft) * powerChangeRate;
+    currentPowerBackRight += (targetPowerBackRight - currentPowerBackRight) * powerChangeRate;
+
+    // Assign the updated power values to the motors
+    motors[0].setPower(currentPowerFront);
+    motors[1].setPower(currentPowerBackLeft);
+    motors[2].setPower(currentPowerBackRight);
 }
