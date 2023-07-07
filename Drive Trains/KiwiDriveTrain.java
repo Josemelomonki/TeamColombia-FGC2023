@@ -18,6 +18,7 @@ public class KiwiDrivev4 extends LinearOpMode {
     private double motorPowerTurn = 1;
     private double acceleration = 0.4; // Test to define the final number
     private BNO055IMU imu;
+    private double potencia = 0.5;
 
     @Override
     public void runOpMode() {
@@ -53,8 +54,7 @@ public class KiwiDrivev4 extends LinearOpMode {
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-        double potencia = 0.5;
-
+        
         waitForStart();
 
         while (opModeIsActive()) {
