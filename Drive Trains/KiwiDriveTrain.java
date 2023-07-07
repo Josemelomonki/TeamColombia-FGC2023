@@ -14,9 +14,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 @TeleOp(name = "KiwiDrivev4")
 public class KiwiDrivev4 extends LinearOpMode {
     private DcMotor[] motors = new DcMotor[3];
-    private double motorPower = 1;
+    private double motorPower = 0.5;
     private double motorPowerTurn = 1;
-    private double acceleration = 0.4; // Test to define the final number
+    private double acceleration = 0.1;
     private BNO055IMU imu;
 
     @Override
@@ -53,7 +53,6 @@ public class KiwiDrivev4 extends LinearOpMode {
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-        double potencia = 0.5;
 
         waitForStart();
 
@@ -70,24 +69,25 @@ public class KiwiDrivev4 extends LinearOpMode {
             double leftX = gamepad1.left_stick_x;
             double leftY = -gamepad1.left_stick_y;
             double rightX = gamepad1.right_stick_x;
-            if (gamepad1.left_trigger >= 0.5) {
-                potencia = 0.3;
-            } else if (gamepad1.right_trigger >= 5) {
-                potencia = 1;
+            if (gamepad1.left_trigger > 0) {
+                motorPower = 0.3;
+                motorPowerTurn = 0.3;
+            } else if (gamepad1.right_trigger > 0) {
+                motorPower = 1;
             } else {
-                potencia = 0.7;
+                motorPower = 0.5;
             }
 
             if (leftY > 0 && leftX == 0) {
                 motors[0].setPower(0);
-                motors[1].setPower(potencia);
-                motors[2].setPower(potencia);
+                motors[1].setPower(motorPower);
+                motors[2].setPower(motorPower);
 
             }
             if (leftY < 0 && leftX == 0) {
                 motors[0].setPower(0);
-                motors[1].setPower(-potencia);
-                motors[2].setPower(-potencia);
+                motors[1].setPower(-motorPower);
+                motors[2].setPower(-motorPower);
                 Control(leftX, leftY, rightX);
             } else if (leftY != 0 || leftX != 0 || rightX != 0) {
                 Control(leftX, leftY, rightX);
