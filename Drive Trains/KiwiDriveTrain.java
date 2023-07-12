@@ -72,8 +72,8 @@ public class KiwiDrivev4 extends LinearOpMode {
 
             // Anti Turbo
             if (gamepad1.left_trigger > 0) {
-                motorPower = 0.3;
-                motorPowerTurn = 0.3;
+                motorPower = 0.2;
+                motorPowerTurn = 0.2;
             }
             // Turbo
             else if (gamepad1.right_trigger > 0) {
@@ -93,18 +93,18 @@ public class KiwiDrivev4 extends LinearOpMode {
                     // Turn to the right
                     motors[0].setPower(-0.25);
                     motors[1].setPower(-0.25);
-                    motors[2].setPower(5);
+                    motors[2].setPower(0.5);
 
                     // Correct the turn
                     if (roll != setpoint) {
                         if (roll > setpoint) {
                             motors[0].setPower(-0.25);
                             motors[1].setPower(-0.25);
-                            motors[2].setPower(5);
+                            motors[2].setPower(0.5);
                         } else if (roll < setpoint) {
                             motors[0].setPower(0.25);
                             motors[1].setPower(0.25);
-                            motors[2].setPower(5);
+                            motors[2].setPower(0.5);
                         }
                     }
                 }
@@ -116,18 +116,18 @@ public class KiwiDrivev4 extends LinearOpMode {
 
                     motors[0].setPower(-0.25);
                     motors[1].setPower(-0.25);
-                    motors[2].setPower(-5);
+                    motors[2].setPower(-0.5);
 
                     // Correct the turn
                     if (roll != setpoint) {
                         if (roll > setpoint) {
                             motors[0].setPower(-0.25);
                             motors[1].setPower(-0.25);
-                            motors[2].setPower(-5);
+                            motors[2].setPower(-0.5);
                         } else if (roll < setpoint) {
                             motors[0].setPower(0.25);
                             motors[1].setPower(0.25);
-                            motors[2].setPower(-5);
+                            motors[2].setPower(-0.5);
                         }
                     }
                 }
