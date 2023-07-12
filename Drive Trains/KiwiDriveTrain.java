@@ -17,6 +17,8 @@ public class KiwiDrivev4 extends LinearOpMode {
     private double motorPower = 0.5;
     private double motorPowerTurn = 1;
     private BNO055IMU imu;
+    private double setpoint = 0;
+
 
     @Override
     public void runOpMode() {
@@ -81,12 +83,65 @@ public class KiwiDrivev4 extends LinearOpMode {
                 motorPower = 0.5;
             }
 
-                // Rotate the robot
-               double turnPower = -rightX;
-               motors[0].setPower(motors[0].getPower() + turnPower);
-               motors[1].setPower(motors[1].getPower() + turnPower);
-               motors[2].setPower(motors[2].getPower() + turnPower);
-}
+         } // Left or Right
+            else if(leftY == 0 && leftX != 0){
+                if(leftX > 0){
+                    //Calculate right
+                    if(leftX == 0.1 || leftX == 0.2){
+                        DoI = setpoint + 3;
+                        IoD = DoI;
+
+                    }
+                    //Turn to the right 
+                    motors[0].setPower(-0.25);
+                    motors[1].setPower(-0.25);
+                    motors[2].setPower(5);
+                    //Correct the turn 
+                    if(DoI != IoD){
+                        if(DoI > IoD){
+                        motors[0].setPower(-0.25);    
+                        motors[1].setPower(-0.25);
+                        motors[2].setPower(5);
+                        }
+                        else if(DoI < IoD){
+                        motors[0].setPower(0.25);
+                        motors[1].setPower(0.25);
+                        motors[2].setPower(5);  
+                        }
+                    }
+                }
+                if(leftX < 0){
+                    //Turn to the left
+                    if(leftX == -0.1 || leftX == -0.2){
+                        DoI = setpoint - 3;
+                        IoD = DoI;
+                    }
+                    
+                    motors[0].setPower(-0.25);    
+                    motors[1].setPower(-0.25);
+                    motors[2].setPower(-5);
+                    //Correct the Turns 
+                    if(DoI > IoD){  
+                        motors[0].setPower(-0.25);    
+                        motors[1].setPower(-0.25);
+                        motors[2].setPower(-5);
+
+                    }
+                    else if(DoI < IoD){
+                        motors[0].setPower(0.25);
+                        motors[1].setPower(0.25);
+                        motors[2].setPower(-5);  
+
+                    }
+                }
+
+            } else if (leftY != 0 || rightX != 0) {
+                control(leftX, leftY, rightX);
+            } else if (leftY == 0 || leftX == 0 || rightX == 0) {
+                motors[0].setPower(0);
+                motors[1].setPower(0);
+                motors[2].setPower(0);
+            }
 
         //Foward
             if (leftY > 0 && leftX == 0) {
@@ -120,6 +175,7 @@ public class KiwiDrivev4 extends LinearOpMode {
                     motors[2].getCurrentPosition());
             telemetry.addData("Joystick Values", "LeftX: %.2f, LeftY: %.2f, RightX: %.2f",
                     leftX, leftY, rightX);
+             telemetry.addData("Punto de Ajuste", setpoint);
             telemetry.addData("Roll", roll);
             telemetry.addData("Pitch", pitch);
             telemetry.addData("Yaw", yaw);
@@ -148,3 +204,70 @@ public void Control(double leftX, double leftY, double rightX) {
     motors[1].setPower(currentPowerBackLeft);
     motors[2].setPower(currentPowerBackRight);
 }
+
+  // Asignar potencia a los motores
+        motors[0].setPower(potenciaAtrasDerecha);
+        motors[1].setPower(potenciaAtrasIzquierda);
+        motors[2].setPower(potenciaFrontal);
+
+        // Girar el robot
+        double potenciaGiro = -rightX;
+        motors[0].setPower(motors[0].getPower() + potenciaGiro);
+        motors[1].setPower(motors[1].getPower() + potenciaGiro);
+        motors[2].setPower(motors[2].getPower() + potenciaGiro);
+    }
+
+    public void arcoT() {
+        // Obtener los ángulos de orientación actuales del IMU
+        Orientation angles = imu.getAngularOrientation(
+                AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        // Extraer los ángulos de orientación individuales
+        double roll = angles.firstAngle;
+        double pitch = angles.secondAngle;
+        double yaw = angles.thirdAngle;
+        double multiplicador;
+        double anguloR = roll;
+
+        if (roll > 180) {
+            multiplicador = -1;
+        } else {
+            multiplicador = 1;
+        }
+
+        if (Math.abs(anguloR) >= 180) {
+            anguloR = (360 - Math.abs(anguloR)) * Math.signum(anguloR);
+        }
+
+        anguloR = anguloR * multiplicador;
+        if (anguloR <= 22.5 && anguloR >= -22.5) {
+            setpoint = 0;
+        }
+        else if (anguloR > 22.5 && anguloR < 67.5) {
+            setpoint = 1;
+        }
+        else if (anguloR >= 67.5 && anguloR <= 112.5) {
+            setpoint = 2;
+        }
+        else if (anguloR >= 112.5 && anguloR <= 157.5) {
+            setpoint = 3;
+        }
+        else if (anguloR <= 180 && anguloR >= 157.5) {
+            setpoint = 4;
+        }
+        else if (anguloR <= -22.5 && anguloR >= -67.5) {
+            setpoint = -5;
+        }
+        else if (anguloR <= -67.5 && anguloR >= -112.5) {
+            setpoint = -6;
+        }
+        else if (anguloR <= -112.5 && anguloR >= -157.5) {
+            setpoint = -7;
+        }
+        else if (anguloR <= -157.5 && anguloR >= -180) {
+            setpoint = -8;
+        }
+
+}
+}
+
